@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken"
 import User from "../models/user.model.js"
 
 // the "next" var lets us call the next function, waiting after the protectRoute has been called
+
+//This middleware is verifying the user's token from cookies to ensure that the user is authenticated before allowing access to protected routes.
 export const protectRoute = async (req, res, next) => {
     try {
         const token = req.cookies.jwt;
@@ -21,7 +23,7 @@ export const protectRoute = async (req, res, next) => {
         if (!user) {
             res.status(400).json({ message: "User not found" })
         }
-        req.user = user;
+        req.user = user; //This is the authenticated user
         next();
     } catch (error) {
         console.log("Error in protectRoute middleware: ", error.message);
