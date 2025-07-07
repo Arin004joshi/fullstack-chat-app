@@ -7,7 +7,7 @@ const messageRoutes = express.Router();
 // to view all the contacts of a user
 messageRoutes.get("/users",protectRoute,getUsersFromSidebar)
 
-// to recieve and send messages
+// to recieve messages
 messageRoutes.get("/:id",protectRoute,getMessages);
 
 // to send messages

@@ -12,7 +12,7 @@ export const getUsersFromSidebar = async (req, res) => {
 
         res.status(200).json({ filteredUser });
     } catch (error) {
-        console.error("Error in getUsersFromSidebar", error.message);
+        console.error("Error in getUsersFromSidebar", error);
         res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -22,20 +22,22 @@ export const getMessages = async (req, res) => {
         const myId = req.user._id;
         const { id: userToChatId } = req.params;
 
-        // get all the messages where "myId" is the sender or "userToChatId" is the sender
-        const messages = Message.find({
+        const messages = await Message.find({
             $or: [
                 { senderId: myId, receiverId: userToChatId },
                 { senderId: userToChatId, receiverId: myId }
             ]
         })
+            .sort({ createdAt: 1 }) // Optional: sort by oldest first
+            .lean(); // Removes Mongoose metadata to avoid circular refs
 
-        res.status(200).json({ messages });
+        res.status(200).json(messages);
     } catch (error) {
         console.error("Error in getMessages controller", error.message);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
 
 export const sendMessages = async (req, res) => {
     try {
@@ -55,13 +57,13 @@ export const sendMessages = async (req, res) => {
             senderId,
             receiverId,
             text,
-            image:imageUrl,
+            image: imageUrl,
         });
         await newMessage.save();
 
         // real-time functionality goes here ------->>>>
 
-        res.status(201).json({newMessage});
+        res.status(201).json( newMessage );
     } catch (error) {
         console.error("Error in sendMessage controller", error.message);
         res.status(500).json({ message: "Internal server error" });

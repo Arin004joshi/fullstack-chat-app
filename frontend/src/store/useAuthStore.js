@@ -15,6 +15,8 @@ export const useAuthStore = create((set) => ({
     // While this check happens, the app shows a loading spinner.
     isCheckingAuth: true,
 
+    onlineUsers : [],
+
     // we need a function to check the authentication of the user when they refreshes the browser; we already have an endpoint to do the check
     checkAuth: async () => {
         try {
