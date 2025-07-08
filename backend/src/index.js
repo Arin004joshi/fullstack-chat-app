@@ -5,17 +5,17 @@ import { connectDB } from "./lib/db.js";
 import cookieParser from "cookie-parser";
 import messageRoutes from "./routes/message.route.js";
 import cors from "cors";
-import { app, server } from "./lib/socket.js"
-import path from "path"
+import { app, server } from "./lib/socket.js";
+import path from "path";
 import { fileURLToPath } from "url";
 
+// ✅ Proper __dirname setup in ES module
 const __filename = fileURLToPath(import.meta.url);
-const _dirname = path.resolve();
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const PORT = process.env.PORT;
 
-// ✅ Correct order and limits
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true,
@@ -23,20 +23,17 @@ app.use(cors({
 
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
-
-// to get back the cookies
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-
-// here we are serving both the frontend and backend on the same server
+// ✅ Static file serving with corrected __dirname
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
   });
 }
 
