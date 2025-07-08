@@ -6,12 +6,14 @@ import cookieParser from "cookie-parser";
 import messageRoutes from "./routes/message.route.js";
 import cors from "cors";
 import { app, server } from "./lib/socket.js"
-
 import path from "path"
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const _dirname = path.resolve();
 
 dotenv.config();
 const PORT = process.env.PORT;
-const _dirname = path.resolve();
 
 // ✅ Correct order and limits
 app.use(cors({
