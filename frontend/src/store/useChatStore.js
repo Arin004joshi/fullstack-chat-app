@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
+import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create((set, get) => ({
     messages: [],
@@ -35,7 +36,7 @@ export const useChatStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get(`/messages/${userId}`);
             set({ messages: res.data });
-            console.log("Fetched users:", res.data)
+            console.log("Fetched users:", res.data);
         } catch (error) {
             toast.error(error?.response?.data?.message || "Failed to fetch messages");
         } finally {
@@ -51,6 +52,25 @@ export const useChatStore = create((set, get) => ({
         } catch (error) {
             toast.error(error.response.data.message);
         }
+    },
+
+    subscribeToMessages: async () => {
+        const { selectedUser } = get();
+        if (!selectedUser) return;
+        const socket = useAuthStore.getState().socket;
+        socket.on("newMessage", (newMessage) => {
+            
+            // this do npt confuse the current user with any other user
+            if (newMessage.senderId !== selectedUser._id) return;
+            set({
+                messages: [...get().messages, newMessage],
+            })
+        })
+    },
+
+    unsubscribeFromMessages: async () => {
+        const socket = useAuthStore.getState().socket;
+        socket.off("newMessage");
     },
 
     setSelectedUser: (selectedUser) => set({ selectedUser }),

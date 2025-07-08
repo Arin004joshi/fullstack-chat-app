@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId } from "../lib/socket.js";
+import { io } from "../lib/socket.js"; 
 
 export const getUsersFromSidebar = async (req, res) => {
     try {
@@ -62,8 +64,13 @@ export const sendMessages = async (req, res) => {
         await newMessage.save();
 
         // real-time functionality goes here ------->>>>
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            // if the user is online, inform the receiver to listen to the event
+            io.to(receiverSocketId).emit("newMessage", newMessage);
+        }
 
-        res.status(201).json( newMessage );
+        res.status(201).json(newMessage);
     } catch (error) {
         console.error("Error in sendMessage controller", error.message);
         res.status(500).json({ message: "Internal server error" });

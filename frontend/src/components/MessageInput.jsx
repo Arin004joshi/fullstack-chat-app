@@ -46,7 +46,6 @@ const MessageInput = () => {
       setText("");
       setImagePreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      toast.success("Failed to send message");
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
