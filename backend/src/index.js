@@ -1,4 +1,4 @@
-// server.js or index.js - CORRECT IMPLEMENTATION
+// src/index.js - Updated CORS configuration
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -13,21 +13,44 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5001;
 
-// Middleware
-app.use(express.json({ limit: "10mb" })); // Increase limit for image uploads
-app.use(cookieParser());
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+// CORS Configuration - UPDATED
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://your-frontend-domain.com", // Replace with your actual frontend domain
+    "https://fullstack-chat-app-e6ut.onrender.com", // If this is your frontend URL
+  ],
   credentials: true,
-}));
+  optionsSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+};
 
-// Routes - MAKE SURE THESE PATHS ARE CORRECT
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser());
+
+// Handle preflight requests
+app.options("*", cors(corsOptions));
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
 // Basic route for testing
 app.get("/", (req, res) => {
   res.json({ message: "Server is running!" });
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development"
+  });
 });
 
 // Error handling middleware
