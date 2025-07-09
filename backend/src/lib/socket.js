@@ -1,38 +1,46 @@
-import { Server } from "socket.io"
-import http from "http"
-import express from "express"
+import { Server } from "socket.io";
+import http from "http";
+import express from "express";
 
 const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173"]
+        origin: ["http://localhost:5173"], // Change this to your frontend domain on production
+        credentials: true,
     },
 });
 
-// function that returns the socketId
+// Store online users
+const userSocketMap = {};
+
+// Get receiver socket ID by userId
 export function getReceiverSocketId(userId) {
     return userSocketMap[userId];
 }
 
-// use to store online users
-const userSocketMap = {};
-
 io.on("connection", (socket) => {
-    console.log("A user connected", socket.id);
+    console.log("User connected:", socket.id);
 
     const userId = socket.handshake.query.userId;
-    if (userId) userSocketMap[userId] = socket.id;
 
-    // send events to all the connected users
+    // 🔒 Validate userId presence
+    if (!userId) {
+        console.warn("Connection attempt without userId, disconnecting:", socket.id);
+        socket.disconnect();
+        return;
+    }
+
+    userSocketMap[userId] = socket.id;
+
     io.emit("getOnlineusers", Object.keys(userSocketMap));
 
     socket.on("disconnect", () => {
-        console.log("A user disconnected", socket.id);
+        console.log("User disconnected:", socket.id);
         delete userSocketMap[userId];
         io.emit("getOnlineusers", Object.keys(userSocketMap));
-    })
-})
+    });
+});
 
 export { io, app, server };
