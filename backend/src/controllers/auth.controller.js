@@ -56,19 +56,16 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        // to check for user-email
         const user = await User.findOne({ email });
         if (!user) {
-            res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        // to check for user-password
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            res.status(400).json({ message: "Invalid credentials" });
+            return res.status(400).json({ message: "Invalid credentials" });
         }
 
-        //generate the jwt token and send it to a cookie
         generateToken(user._id, res);
 
         res.status(200).json({
@@ -76,13 +73,14 @@ export const login = async (req, res) => {
             fullName: user.fullName,
             email: user.email,
             profilePic: user.profilePic,
-        })
+        });
 
     } catch (error) {
-        console.log("Error in signup controller", error.message);
-        res.status(500).json({ message: "Internal server error" })
+        console.log("Error in login controller", error.message);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
 
 
 //in logout, we just need to clear out the cookies
