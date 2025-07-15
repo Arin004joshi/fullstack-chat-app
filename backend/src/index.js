@@ -18,8 +18,7 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://your-frontend-domain.com", // Replace with your actual frontend domain
-    "https://fullstack-chat-app-e6ut.onrender.com", // If this is your frontend URL
+    "https://fullstack-chat-app-1-nt6g.onrender.com", // Replace with the actual frontend URL you get
   ],
   credentials: true,
   optionsSuccessStatus: 200,
