@@ -12,7 +12,7 @@ import { app, server } from "./lib/socket.js";
 
 // Load env variables
 dotenv.config();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 5001;
 
 // Fix for __dirname in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -23,8 +23,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173", // change to frontend URL on deploy
+    origin: [
+      "http://localhost:5173",
+      "https://fullstack-chat-app-1-nt6g.onrender.com", // Your actual frontend URL
+    ],
     credentials: true,
+    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
   })
 );
 

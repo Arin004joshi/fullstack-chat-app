@@ -7,8 +7,14 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173"], // Change this to your frontend domain on production
+        origin: [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://fullstack-chat-app-1-nt6g.onrender.com", // Your actual frontend URL
+        ],
         credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
     },
 });
 
