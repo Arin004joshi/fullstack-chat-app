@@ -10,9 +10,7 @@ const io = new Server(server, {
     cors: {
         origin: [
             "http://localhost:5173",
-            "http://localhost:3000",
-            "https://your-frontend-domain.com", // Replace with your actual frontend domain
-            "https://fullstack-chat-app-e6ut.onrender.com", // If this is your frontend URL
+            "https://fullstack-chat-app-e6ut.onrender.com",
         ],
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -31,6 +29,7 @@ export function getReceiverSocketId(userId) {
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
 
+    // This retrieves the userId passed by the frontend when connecting
     const userId = socket.handshake.query.userId;
 
     if (!userId) {
